@@ -284,7 +284,9 @@ class Miprimermodulo extends Module
 
 
                 //         }
-                dump($productImport['id']);
+                dump($productImport);
+
+                
                 
                 $id_product = $productImport['id'];
                 $url = 'http://localhost/mitiendanueva/img/tmp/product_mini_'.$productImport['id_default_image'].'.jpg';

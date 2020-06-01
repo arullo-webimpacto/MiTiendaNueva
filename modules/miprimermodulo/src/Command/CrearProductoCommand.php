@@ -189,30 +189,47 @@ class CrearProductoCommand extends Command
 
 
                 $productJSON->add();
+                $productJSON->save();
                 $output->writeln('Hello Word! id_Product es: '.$productJSON->id.' ');
-
-
-                $id_product = $productJSON->id;
-                $url = 'http://localhost/mitiendanueva/img/tmp/product_mini_'.$productImport['id_default_image'].'.jpg';
-                //dump($url);
-                $image = new Image();
-                //dump($image);
+                $imagenes = $productImport['associations']['images'];
+                $i=1;
+                $idd=0;
+                //$image = new Image();
+                foreach($imagenes as $imagen){
+                    $id_product = $productJSON->id;
+                    $url = 'http://localhost/mitiendanueva/'.$imagen['id'].'/'.$productImport['link_rewrite'][0]['value'].'.jpg';
+                    //dump($url);
+                    $image = new Image();
+                    //dump($image);
                     $image->id_product = $id_product;
                     $shops = Shop::getShops(true, null, true); 
-                    $image->position = Image::getHighestPosition($id_product) + 1;
-                    $image->cover = true;
-                     if (($image->validateFields(false, true)) === true && ($image->validateFieldsLang(false, true)) === true && $image->add()){
+                    $image->position = Image::getHighestPosition($productImport['id']) + 1;
+                    if($idd==0){
+                        $image->cover = true;
+                    }else{
+                        $image->cover = null;
+                    }
+                    
+                    if (($image->validateFields(false, true)) === true && ($image->validateFieldsLang(false, true)) === true && $image->add()){
                         //dump('Estoy');
+                        $i++;
                         if (AdminImportController::copyImg($id_product, $image->id, $url, 'products', false)){
                             $output->writeln('Hello Word! He copiado la imagen');
+                            
                         }else{
                             //echo "fallido";
                             $image->delete();
                         }
                      }
-                } else{
-                    // dump('Esta repetido');
-                }                   
+                     $idd++;
+                      //$image->add();
+                $image->save();
+                }
+                
+                
+            } else{
+              // dump('Esta repetido');
+            }                   
                 
                 
             }
